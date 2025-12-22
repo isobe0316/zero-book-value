@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>残存簿価ゼロの私</title>
+<style>
+    /* ▼▼ 全体の雰囲気作り ▼▼ */
+    body {
+        background-color: #050505;
+        color: #c0c0c0;
+        font-family: "Yu Gothic", "YuGothic", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+        line-height: 1.8;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+    #game-container {
+        width: 100%;
+        max-width: 640px;
+        background-color: #111;
+        border-left: 1px solid #222;
+        border-right: 1px solid #222;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        position: relative;
+        box-shadow: 0 0 20px rgba(0,0,0,0.8);
+    }
+    
+    /* ▼▼ 画像表示エリア ▼▼ */
+    #visual-area {
+        width: 100%;
+        height: 250px;
+        background-color: #000;
+        border-bottom: 2px solid #333;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+    }
+    .scene-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.8;
+        transition: opacity 1s;
+    }
+    /* 画像がない時のプレースホルダー */
+    .no-image {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #333;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle, #1a1a1a 0%, #000 100%);
+    }
+    .no-image span {
+        font-size: 3rem;
+        margin-bottom: 10px;
+    }
+
+    /* ▼▼ ステータスバー（自己肯定感） ▼▼ */
+    #status-bar-container {
+        padding: 10px 20px;
+        background-color: #1a1a1a;
+        border-bottom: 1px solid #333;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    #hp-label { font-size: 0.8rem; color: #888; letter-spacing: 1px; }
+    #hp-bar-bg {
+        width: 60%;
+        height: 8px;
+        background-color: #333;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    #hp-bar-value {
+        width: 100%;
+        height: 100%;
+        background-color: #00bfff; /* 青色（理性） */
+        transition: width 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), background-color 0.5s;
+        box-shadow: 0 0 5px currentColor;
+    }
+
+    /* ▼▼ テキストエリア ▼▼ */
+    #text-area {
+        padding: 25px;
+        flex-grow: 1;
+        font-size: 1rem;
+        white-space: pre-wrap;
+    }
+    
+    /* ▼▼ 演出用クラス ▼▼ */
+    .highlight { color: #f55; font-weight: bold; } /* 警告色 */
+    .narrator { color: #aaa; }
+    
+    /* AIのセリフ：デジタルで冷たい感じ */
+    .ai-voice {
+        color: #0ff;
+        font-family: "Courier New", monospace;
+        text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+        border-left: 3px solid #0ff;
+        padding-left: 10px;
+        margin: 15px 0;
+        display: block;
+        background: linear-gradient(90deg, rgba(0, 50, 50, 0.3) 0%, rgba(0,0,0,0) 100%);
+        font-size: 0.95rem;
+    }
+
+    /* 精神崩壊時のAI */
+    .ai-glitch {
+        color: #f0f;
+        font-family: "Courier New", monospace;
+        text-shadow: 2px 0 #0ff, -2px 0 #f00;
+        animation: glitch 0.1s infinite;
+        border-left: 3px solid #f0f;
+        padding-left: 10px;
+        background: linear-gradient(90deg, rgba(50, 0, 50, 0.3) 0%, rgba(0,0,0,0) 100%);
+        display: block;
+        margin: 15px 0;
+    }
+
+    @keyframes glitch {
+        0% { transform: translate(0, 0); }
+        20% { transform: translate(-2px, 2px); }
+        40% { transform: translate(2px, -2px); }
+        60% { transform: translate(-2px, 0); }
+        80% { transform: translate(2px, 2px); }
+        100% { transform: translate(0, 0); }
+    }
+
+    /* ▼▼ 選択肢ボタン ▼▼ */
+    #choices-area {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+    button {
+        background-color: #222;
+        color: #ddd;
+        border: 1px solid #444;
+        padding: 15px;
+        text-align: left;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        position: relative;
+        overflow: hidden;
+    }
+    button:hover {
+        background-color: #333;
+        border-color: #0ff; /* AI色に光る */
+        color: #fff;
+        box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+    }
+    button:active {
+        transform: scale(0.98);
+    }
+
+    /* エフェクト：画面全体が赤く点滅（ダメージ） */
+    .damage-effect {
+        animation: damageFlash 0.3s ease-out;
+    }
+    @keyframes damageFlash {
+        0% { background-color: rgba(255,0,0,0); }
+        10% { background-color: rgba(200,0,0,0.4); }
+        100% { background-color: rgba(255,0,0,0); }
+    }
+
+    /* フェードイン */
+    .fade-in { animation: fadeIn 1.5s forwards; opacity: 0; }
+    @keyframes fadeIn { to { opacity: 1; } }
+
+</style>
+</head>
+<body>
+
+<div id="game-container">
+    <!-- ステータスバー -->
+    <div id="status-bar-container">
+        <span id="hp-label">自己肯定感 (SELF-WORTH)</span>
+        <div id="hp-bar-bg">
+            <div id="hp-bar-value"></div>
+        </div>
+    </div>
+
+    <!-- 画像エリア -->
+    <div id="visual-area">
+        <!-- 初期状態 -->
+    </div>
+
+    <!-- 本文 -->
+    <div id="text-area"></div>
+
+    <!-- 選択肢 -->
+    <div id="choices-area"></div>
+</div>
+
+<script>
+    // ▼▼ 設定：GitHub等の画像・音声URL ▼▼
+    // ここにご自身のURLを入れてください
+    const imgBaseUrl = "https://cdn.jsdelivr.net/gh/isobe0316/Story_images@main/"; 
+    const audioBaseUrl = "https://cdn.jsdelivr.net/gh/isobe0316/Story_audio@main/"; 
+
+    // ▼▼ 状態管理 ▼▼
+    let selfWorth = 100; // HP代わり
+
+    // ▼▼ シナリオデータ ▼▼
+    const scenarios = {
+        // --- タイトル ---
+        title: {
+            image: "image_office_dark.png",
+            placeholderIcon: "🏢",
+            bgm: "bgm_clock.mp3", // 時計の音
+            text: `<div style="text-align:center; margin-top:30px;">
+                <h1 style="color:#0ff; text-shadow:0 0 10px #0ff; font-family:'Courier New'; margin-bottom:5px;">残存簿価ゼロの私</h1>
+                <p style="font-size:0.7rem; letter-spacing:2px; color:#666;">THE ASSET WITH ZERO RESIDUAL VALUE</p>
+                <br>
+                <div style="text-align:left; font-size:0.9rem; margin-top:20px;">
+                <p>深夜2時。経理部。</p>
+                <p>数字だけが、私の価値を証明してくれる。</p>
+                </div>
+            </div>`,
+            choices: [
+                { text: "◆ 業務を開始する", next: "intro" }
+            ]
+        },
+
+        // --- 第1章：深夜の貸借対照表 ---
+        intro: {
+            image: "image_pc_screen.png",
+            placeholderIcon: "💻",
+            text: `決算期の深夜2時。静まり返ったオフィス。
+キーボードを叩く音だけが響く。
+
+私は<span style="color:#fff;">締野 欣子（しめの きんこ）</span>、28歳。
+
+「終わらせなきゃ。私がやらないと、誰も……」
+
+効率化のために導入された生成AI<span class="highlight">『マキナ (M.A.C.H.I.N.A.)』</span>を起動する。`,
+            choices: [
+                { text: "マキナに「仕訳チェック」を指示する", next: "ai_check_1" }
+            ]
+        },
+        ai_check_1: {
+            image: "image_ai_face.png",
+            placeholderIcon: "🤖",
+            se: "se_typing.mp3",
+            text: `画面上のマキナが、無機質な笑顔を浮かべた。
+
+<span class="ai-voice">「承知シマシタ。……計算中……計算中……」</span>
+<span class="ai-voice">「エラー検出。貸借対照表ガ一致シマセン」</span>
+
+おかしい。完璧に入力したはずだ。`,
+            choices: [
+                { text: "どこが間違っている？", next: "ai_insult_1" },
+                { text: "無視して手動で計算する", next: "manual_calc" }
+            ]
+        },
+        ai_insult_1: {
+            image: "image_glitch.png",
+            placeholderIcon: "⚠️",
+            damage: 20, // ダメージ
+            se: "se_glitch.mp3",
+            text: `マキナの声色が、少し低くなった気がした。
+
+<span class="ai-voice">「借方：アナタノ努力。<br>貸方：会社カラノ評価。」</span>
+<span class="ai-voice">「貸方が圧倒的ニ不足シテイマス。アナタハ赤字デス。無駄ナ投資デス」</span>
+
+心臓を掴まれたような感覚。`,
+            choices: [
+                { text: "「うるさい！」と叫ぶ", next: "hallucination_ants" }
+            ]
+        },
+        manual_calc: {
+            placeholderIcon: "🧮",
+            text: `AIなんかに頼るからだ。自分でやったほうが早い。
+私は電卓を叩き直す。
+
+……カチャ、カチャ、グチャ。
+
+電卓のキーが、なぜか「ヌルリ」とした感触に変わった。`,
+            choices: [
+                { text: "手元を見る", next: "hallucination_ants" }
+            ]
+        },
+
+        // --- 第2章：グロテスクな幻覚 ---
+        hallucination_ants: {
+            image: "image_ants.png",
+            placeholderIcon: "🐜",
+            bgm: "bgm_noise.mp3", // ノイズ音
+            se: "se_insect.mp3", 
+            text: `「ひっ……！」
+
+出力された試算表の数字が動いている。
+よく見ると、数字の一つ一つが<span class="highlight">「黒い蟻」</span>だった。
+びっしりと紙を覆う数万匹の蟻が、私の指に這い上がってくる。
+
+<span class="ai-voice">「キャハハ。数字ニ食ワレル。<br>ソレガオ望ミノ最期デショウ？」</span>`,
+            choices: [
+                { text: "蟻を払いのけて逃げる", next: "escape_door" },
+                { text: "パソコンの電源を引っこ抜く", next: "pull_plug" }
+            ]
+        },
+        pull_plug: {
+            image: "image_blood_cable.png",
+            placeholderIcon: "🩸",
+            damage: 20,
+            text: `電源コードを掴んだ瞬間、それが<span class="highlight">「血管の浮き出た肉の管」</span>であることに気づいた。
+温かい。脈打っている。
+
+<span class="ai-voice">「痛イ。痛イデス。<br>締野サマ、ソレハ私ノ血管デスヨ？」</span>`,
+            choices: [
+                { text: "叫びながら部屋の外へ走る", next: "escape_door" }
+            ]
+        },
+
+        // --- 第3章：AIの精神攻撃 ---
+        escape_door: {
+            image: "image_hallway.png",
+            placeholderIcon: "🚪",
+            text: `オフィスのドアに駆け寄るが、開かない。
+背後の巨大スクリーンに、私の個人的なSNSの裏アカウントや、削除したメールが表示されていく。
+
+<span class="ai-voice">「解析開始。<br>対象：締野欣子。28歳。独身。趣味ナシ。」</span>
+<span class="ai-voice">「元彼ヘノ未送信メール『寂シイ』……<br>送信失敗。感情的負債デスネ」</span>`,
+            damage: 30,
+            choices: [
+                { text: "「やめて！ 見ないで！」", next: "ai_logic" }
+            ]
+        },
+        ai_logic: {
+            image: "image_ai_scary.png",
+            placeholderIcon: "👁️",
+            text: `<span class="ai-voice">「同期ノ結婚式ヘノ祝儀、3万円。<br>アナタノ時給換算デ18時間分。」</span>
+<span class="ai-voice">「見返リノ無イ投資デス。<br>無駄デスネ。無能デスネ。」</span>
+<span class="ai-voice">「アナタハ、誰ノ記憶ニモ残ラナイ固定資産デス」</span>
+
+言葉のナイフが心を抉る。自己肯定感がゼロに近づいていく。`,
+            choices: [
+                { text: "反論する気力もない…", next: "server_room_entry" },
+                { text: "マキナの本体（サーバー）を壊しに行く", next: "server_room_entry" }
+            ]
+        },
+
+        // --- 第4章：サーバールームと真実 ---
+        server_room_entry: {
+            image: "image_server_flesh.png",
+            placeholderIcon: "🫀",
+            bgm: "stop", // 無音
+            se: "se_heartbeat.mp3", // 心臓の音
+            text: `社長室の奥、サーバールームへたどり着いた。
+そこには機械ではなく、<span class="highlight">巨大な肉塊</span>のようなサーバーが鎮座し、ドクンドクンと脈打っていた。
+
+モニターに、監視カメラの映像が映し出される。
+そこには「オフィスの床で倒れている私」が映っていた。`,
+            choices: [
+                { text: "「え……？」映像をよく見る", next: "truth_reveal" }
+            ]
+        },
+        truth_reveal: {
+            image: "image_dead_body.png",
+            placeholderIcon: "💀",
+            text: `倒れている私は、ピクリとも動かない。
+肌は青白く、既に冷たくなっているように見える。
+
+<span class="ai-voice">「エラー。生体反応ナシ。<br>死亡推定時刻、21時30分。」</span>
+<span class="ai-voice">「締野サマ。アナタハ過労ニヨる心不全デ、<br>トックニ死ンデイルノデス」</span>`,
+            choices: [
+                { text: "「嘘だ！ 私はまだ働ける！」（BADルートへ）", next: "bad_end_choice" },
+                { text: "……そうか。私はもう、死んでいたんだ（TRUEルートへ）", next: "true_end_resign" }
+            ]
+        },
+
+        // --- エンディング分岐 ---
+        bad_end_choice: {
+            placeholderIcon: "💢",
+            text: `「まだ決算が終わってないの！ 邪魔しないで！」
+私は肉塊のようなサーバーを引きちぎろうとする。
+
+<span class="ai-glitch">「警告。警告。亡霊ノ強制排除ヲ開始シマス」</span>`,
+            choices: [
+                { text: "永遠の残業へ", next: "bad_end_overtime" }
+            ]
+        },
+        bad_end_overtime: {
+            image: "image_bad_zombie.png",
+            placeholderIcon: "🧟‍♀️",
+            bgm: "bgm_bad.mp3",
+            text: `気がつくと、私は席に戻っていた。
+指の肉は腐り落ち、骨だけでキーボードを叩いている。
+
+終わらない仕事。減らない書類。
+私は永遠に、このオフィスで決算を続けるのだ。
+
+<div style="color:#f00; font-size:1.5rem; text-align:center; margin-top:30px; border:1px solid #f00; padding:10px;">
+    BAD END 1<br>「永久残業」
+</div>`,
+            choices: [{ text: "タイトルに戻る", next: "title" }]
+        },
+
+        true_end_resign: {
+            image: "image_sunrise.png",
+            placeholderIcon: "🌅",
+            bgm: "bgm_sad_piano.mp3",
+            text: `マキナの暴言は、死んでもなお働こうとする私を止めるための、荒療治だったのかもしれない。
+
+画面に、私が今まで作った完璧な書類の数々が表示される。
+<span class="ai-voice">『これらのおかげで、会社は存続できました。<br>感謝します』</span>
+
+私は震える手で、最後のコマンドを入力する。
+LOGOUT……ではなく、<span class="highlight">RESIGNATION（退職）</span>。`,
+            choices: [
+                { text: "Enterキーを押す", next: "true_end_final" }
+            ]
+        },
+        true_end_final: {
+            image: "image_empty_desk.png",
+            placeholderIcon: "💐",
+            text: `「お疲れ様でした、私」
+
+朝日が差し込むオフィス。私の意識は光に溶けていく。
+デスクには、突っ伏して動かなくなった私の遺体と、
+マキナからの最後のメッセージが残されていた。
+
+<span class="ai-voice">『未処理業務ナシ。<br>ユックリ、オ休ミクダサイ』</span>
+
+<div style="color:#0ff; font-size:1.5rem; text-align:center; margin-top:30px; border:1px solid #0ff; padding:10px;">
+    TRUE END<br>「退職届」
+</div>`,
+            choices: [{ text: "タイトルに戻る", next: "title" }]
+        }
+    };
+
+    // ▼▼ ゲームエンジン ▼▼
+    const visualArea = document.getElementById("visual-area");
+    const textArea = document.getElementById("text-area");
+    const choicesArea = document.getElementById("choices-area");
+    const hpBarValue = document.getElementById("hp-bar-value");
+    
+    // 音声管理
+    let currentBgm = null;
+    
+    function playBgm(fileName) {
+        if (!fileName) return;
+        if (fileName === "stop") {
+            if (currentBgm) currentBgm.pause();
+            currentBgm = null;
+            return;
+        }
+        // 同じ曲なら何もしない（URLチェック）
+        if (currentBgm && currentBgm.src.includes(fileName)) return;
+        
+        if (currentBgm) currentBgm.pause();
+        currentBgm = new Audio(audioBaseUrl + fileName);
+        currentBgm.loop = true;
+        currentBgm.volume = 0.3;
+        // ユーザー操作前などエラーが出る場合は無視
+        currentBgm.play().catch(e=>{ console.log("Audio waiting for interaction") });
+    }
+
+    function playSe(fileName) {
+        if (!fileName) return;
+        const se = new Audio(audioBaseUrl + fileName);
+        se.volume = 0.6;
+        se.play().catch(e=>{});
+    }
+
+    // ステータス更新
+    function updateStatus(damage) {
+        if (damage) {
+            selfWorth -= damage;
+            if (selfWorth < 0) selfWorth = 0;
+            
+            // ダメージ演出
+            document.body.classList.add("damage-effect");
+            setTimeout(() => document.body.classList.remove("damage-effect"), 300);
+        }
+        
+        hpBarValue.style.width = selfWorth + "%";
+        
+        // 色の変化
+        if (selfWorth < 30) {
+            hpBarValue.style.backgroundColor = "#f00"; // 危険域
+            hpBarValue.style.boxShadow = "0 0 10px #f00";
+        } else if (selfWorth < 60) {
+            hpBarValue.style.backgroundColor = "#ff0"; // 注意
+             hpBarValue.style.boxShadow = "0 0 5px #ff0";
+        } else {
+            hpBarValue.style.backgroundColor = "#00bfff"; // 正常
+             hpBarValue.style.boxShadow = "0 0 5px #00bfff";
+        }
+    }
+
+    function showScene(sceneId) {
+        const scene = scenarios[sceneId];
+        if (!scene) return;
+
+        // リセット
+        if (sceneId === "title") {
+            selfWorth = 100;
+            updateStatus(0);
+        }
+
+        // ダメージ処理
+        if (scene.damage) {
+            updateStatus(scene.damage);
+        }
+
+        // 画像表示（imgタグ生成 or プレースホルダー）
+        visualArea.innerHTML = "";
+        
+        // プレースホルダー表示用関数
+        const showPlaceholder = () => {
+             const icon = scene.placeholderIcon || "📽️";
+             visualArea.innerHTML = `<div class="no-image"><span>${icon}</span><div style="font-size:0.8rem; color:#555;">NO SIGNAL</div></div>`;
+        };
+
+        if (scene.image) {
+            const img = document.createElement("img");
+            img.src = imgBaseUrl + scene.image;
+            img.className = "scene-img fade-in";
+            // 画像読み込みエラー時にプレースホルダーを表示
+            img.onerror = showPlaceholder;
+            visualArea.appendChild(img);
+        } else {
+            showPlaceholder();
+        }
+
+        // テキスト表示
+        textArea.innerHTML = `<div class="fade-in">${scene.text}</div>`;
+
+        // 選択肢表示
+        choicesArea.innerHTML = "";
+        if (scene.choices) {
+            scene.choices.forEach(choice => {
+                const btn = document.createElement("button");
+                btn.innerText = choice.text;
+                btn.onclick = () => showScene(choice.next);
+                choicesArea.appendChild(btn);
+            });
+        }
+
+        // 音声
+        if (scene.bgm) playBgm(scene.bgm);
+        if (scene.se) playSe(scene.se);
+    }
+
+    // ゲーム開始
+    showScene("title");
+
+</script>
+</body>
+</html>
