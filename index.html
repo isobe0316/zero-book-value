@@ -216,11 +216,24 @@
 
     // ▼▼ シナリオデータ ▼▼
     const scenarios = {
+        // --- 起動画面（クリック誘導用） ---
+        start_trigger: {
+            placeholderIcon: "🔊",
+            text: `<div style="text-align:center; padding-top:40px;">
+                <p style="color:#666; font-size:0.8rem; letter-spacing:2px;">WARNING: PSYCHOLOGICAL HORROR</p>
+                <br>
+                <p>このゲームは音声を再生します。<br>音量を上げてお楽しみください。</p>
+            </div>`,
+            choices: [
+                { text: "■ 起動 (CLICK TO START)", next: "title" }
+            ]
+        },
+
         // --- タイトル ---
         title: {
             image: "image_office_dark.webp",
             placeholderIcon: "🏢",
-            bgm: "bgm_clock.mp3", // タイトルのみBGMあり
+            bgm: "bgm_clock.mp3", // ★ここで確実に鳴り始める
             text: `<div style="text-align:center; margin-top:30px;">
                 <h1 style="color:#0ff; text-shadow:0 0 10px #0ff; font-family:'Courier New'; margin-bottom:5px;">残存簿価ゼロの私</h1>
                 <p style="font-size:0.7rem; letter-spacing:2px; color:#666;">THE ASSET WITH ZERO RESIDUAL VALUE</p>
@@ -239,7 +252,7 @@
         intro: {
             image: "image_pc_screen.webp",
             placeholderIcon: "💻",
-            bgm: "stop", // ★静寂の演出（BGM停止）
+            bgm: "bgm_clock.mp3", // ★BGM継続
             text: `決算期の深夜2時。静まり返ったオフィス。
 キーボードを叩く音だけが響く。
 
@@ -255,7 +268,8 @@
         ai_check_1: {
             image: "image_ai_face.webp",
             placeholderIcon: "🤖",
-            se: "se_typing.mp3", // キーボード音
+            bgm: "stop", // ★ここで静寂へ
+            se: "se_typing.mp3",
             text: `画面上のマキナが、無機質な笑顔を浮かべた。
 
 <span class="ai-voice">「承知シマシタ。……計算中……計算中……」</span>
@@ -271,7 +285,7 @@
             image: "image_glitch.webp",
             placeholderIcon: "⚠️",
             damage: 20, 
-            se: "se_glitch.mp3", // バグ音
+            se: "se_glitch.mp3", 
             text: `マキナの声色が、少し低くなった気がした。
 
 <span class="ai-voice">「借方：アナタノ努力。<br>貸方：会社カラノ評価。」</span>
@@ -283,9 +297,9 @@
             ]
         },
         manual_calc: {
-            image: "image_calculator.webp", // 電卓の画像
+            image: "image_calculator.webp",
             placeholderIcon: "🧮",
-            se: "se_slime.mp3", // ★粘着音（ヌルリとした感触）
+            se: "se_slime.mp3",
             text: `AIなんかに頼るからだ。自分でやったほうが早い。
 私は電卓を叩き直す。
 
@@ -301,7 +315,7 @@
         hallucination_ants: {
             image: "image_ants.webp",
             placeholderIcon: "🐜",
-            se: "se_insect.mp3", // 虫の音
+            se: "se_insect.mp3",
             text: `「ひっ……！」
 
 出力された試算表の数字が動いている。
@@ -318,7 +332,7 @@
             image: "image_blood_cable.webp",
             placeholderIcon: "🩸",
             damage: 20,
-            se: "se_heartbeat.mp3", // 心臓音
+            se: "se_heartbeat.mp3",
             text: `電源コードを掴んだ瞬間、それが<span class="highlight">「血管の浮き出た肉の管」</span>であることに気づいた。
 温かい。脈打っている。
 
@@ -332,7 +346,7 @@
         escape_door: {
             image: "image_hallway.webp",
             placeholderIcon: "🚪",
-            se: "se_door_locked.mp3", // ★ドアが開かない音
+            se: "se_door_locked.mp3",
             text: `オフィスのドアに駆け寄るが、開かない。
 背後の巨大スクリーンに、私の個人的なSNSの裏アカウントや、削除したメールが表示されていく。
 
@@ -361,7 +375,7 @@
         server_room_entry: {
             image: "image_server_flesh.webp",
             placeholderIcon: "🫀",
-            se: "se_heartbeat.mp3", // 心臓音
+            se: "se_heartbeat.mp3",
             text: `社長室の奥、サーバールームへたどり着いた。
 そこには機械ではなく、<span class="highlight">巨大な肉塊</span>のようなサーバーが鎮座し、ドクンドクンと脈打っていた。
 
@@ -374,7 +388,7 @@
         truth_reveal: {
             image: "image_dead_body.webp",
             placeholderIcon: "💀",
-            se: "se_shock.mp3", // ★衝撃音（ジャンプスケア）
+            se: "se_shock.mp3", 
             text: `倒れている私は、ピクリとも動かない。
 肌は青白く、既に冷たくなっているように見える。
 
@@ -389,7 +403,7 @@
         // --- エンディング分岐 ---
         bad_end_choice: {
             placeholderIcon: "💢",
-            se: "se_flesh_rip.mp3", // ★肉を引きちぎる音
+            se: "se_flesh_rip.mp3",
             text: `「まだ決算が終わってないの！ 邪魔しないで！」
 私は肉塊のようなサーバーを引きちぎろうとする。
 
@@ -401,7 +415,7 @@
         bad_end_overtime: {
             image: "image_bad_zombie.webp",
             placeholderIcon: "🧟‍♀️",
-            se: "se_bone_crack.mp3", // ★骨の音（永遠のタイピング）
+            se: "se_bone_crack.mp3",
             text: `気がつくと、私は席に戻っていた。
 指の肉は腐り落ち、骨だけでキーボードを叩いている。
 
@@ -417,7 +431,7 @@
         true_end_resign: {
             image: "image_sunrise.webp",
             placeholderIcon: "🌅",
-            bgm: "bgm_sad_piano.mp3", // TRUE ENDのみBGMあり
+            bgm: "bgm_sad_piano.mp3",
             text: `マキナの暴言は、死んでもなお働こうとする私を止めるための、荒療治だったのかもしれない。
 
 画面に、私が今まで作った完璧な書類の数々が表示される。
@@ -561,8 +575,8 @@ LOGOUT……ではなく、<span class="highlight">RESIGNATION（退職）</span
         if (scene.se) playSe(scene.se);
     }
 
-    // ゲーム開始
-    showScene("title");
+    // ゲーム開始（最初は起動画面へ）
+    showScene("start_trigger");
 
 </script>
 </body>
