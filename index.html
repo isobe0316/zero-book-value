@@ -208,20 +208,20 @@
 
 <script>
     // ▼▼ 設定：GitHub等の画像・音声URL ▼▼
-    // ここにご自身のURLを入れてください
-    const imgBaseUrl = "https://cdn.jsdelivr.net/gh/isobe0316/Story_images@main/"; 
-    const audioBaseUrl = "https://cdn.jsdelivr.net/gh/isobe0316/Story_audio@main/"; 
+    // GitHubのリポジトリ構造に合わせて相対パスを指定
+    const imgBaseUrl = "./images/"; 
+    const audioBaseUrl = "./audio/"; 
 
     // ▼▼ 状態管理 ▼▼
     let selfWorth = 100; // HP代わり
 
-    // ▼▼ シナリオデータ ▼▼
+    // ▼▼ シナリオデータ（画像をWebPに変更済み） ▼▼
     const scenarios = {
         // --- タイトル ---
         title: {
-            image: "image_office_dark.png",
+            image: "image_office_dark.webp", // ★変更
             placeholderIcon: "🏢",
-            bgm: "bgm_clock.mp3", // 時計の音
+            bgm: "bgm_clock.mp3", 
             text: `<div style="text-align:center; margin-top:30px;">
                 <h1 style="color:#0ff; text-shadow:0 0 10px #0ff; font-family:'Courier New'; margin-bottom:5px;">残存簿価ゼロの私</h1>
                 <p style="font-size:0.7rem; letter-spacing:2px; color:#666;">THE ASSET WITH ZERO RESIDUAL VALUE</p>
@@ -238,7 +238,7 @@
 
         // --- 第1章：深夜の貸借対照表 ---
         intro: {
-            image: "image_pc_screen.png",
+            image: "image_pc_screen.webp", // ★変更
             placeholderIcon: "💻",
             text: `決算期の深夜2時。静まり返ったオフィス。
 キーボードを叩く音だけが響く。
@@ -253,7 +253,7 @@
             ]
         },
         ai_check_1: {
-            image: "image_ai_face.png",
+            image: "image_ai_face.webp", // ★変更
             placeholderIcon: "🤖",
             se: "se_typing.mp3",
             text: `画面上のマキナが、無機質な笑顔を浮かべた。
@@ -268,9 +268,9 @@
             ]
         },
         ai_insult_1: {
-            image: "image_glitch.png",
+            image: "image_glitch.webp", // ★変更
             placeholderIcon: "⚠️",
-            damage: 20, // ダメージ
+            damage: 20, 
             se: "se_glitch.mp3",
             text: `マキナの声色が、少し低くなった気がした。
 
@@ -297,9 +297,9 @@
 
         // --- 第2章：グロテスクな幻覚 ---
         hallucination_ants: {
-            image: "image_ants.png",
+            image: "image_ants.webp", // ★変更
             placeholderIcon: "🐜",
-            bgm: "bgm_noise.mp3", // ノイズ音
+            bgm: "bgm_noise.mp3", 
             se: "se_insect.mp3", 
             text: `「ひっ……！」
 
@@ -314,7 +314,7 @@
             ]
         },
         pull_plug: {
-            image: "image_blood_cable.png",
+            image: "image_blood_cable.webp", // ★変更
             placeholderIcon: "🩸",
             damage: 20,
             text: `電源コードを掴んだ瞬間、それが<span class="highlight">「血管の浮き出た肉の管」</span>であることに気づいた。
@@ -328,7 +328,7 @@
 
         // --- 第3章：AIの精神攻撃 ---
         escape_door: {
-            image: "image_hallway.png",
+            image: "image_hallway.webp", // ★変更
             placeholderIcon: "🚪",
             text: `オフィスのドアに駆け寄るが、開かない。
 背後の巨大スクリーンに、私の個人的なSNSの裏アカウントや、削除したメールが表示されていく。
@@ -341,7 +341,7 @@
             ]
         },
         ai_logic: {
-            image: "image_ai_scary.png",
+            image: "image_ai_scary.webp", // ★変更
             placeholderIcon: "👁️",
             text: `<span class="ai-voice">「同期ノ結婚式ヘノ祝儀、3万円。<br>アナタノ時給換算デ18時間分。」</span>
 <span class="ai-voice">「見返リノ無イ投資デス。<br>無駄デスネ。無能デスネ。」</span>
@@ -356,10 +356,10 @@
 
         // --- 第4章：サーバールームと真実 ---
         server_room_entry: {
-            image: "image_server_flesh.png",
+            image: "image_server_flesh.webp", // ★変更
             placeholderIcon: "🫀",
-            bgm: "stop", // 無音
-            se: "se_heartbeat.mp3", // 心臓の音
+            bgm: "stop", 
+            se: "se_heartbeat.mp3", 
             text: `社長室の奥、サーバールームへたどり着いた。
 そこには機械ではなく、<span class="highlight">巨大な肉塊</span>のようなサーバーが鎮座し、ドクンドクンと脈打っていた。
 
@@ -370,7 +370,7 @@
             ]
         },
         truth_reveal: {
-            image: "image_dead_body.png",
+            image: "image_dead_body.webp", // ★変更
             placeholderIcon: "💀",
             text: `倒れている私は、ピクリとも動かない。
 肌は青白く、既に冷たくなっているように見える。
@@ -395,7 +395,7 @@
             ]
         },
         bad_end_overtime: {
-            image: "image_bad_zombie.png",
+            image: "image_bad_zombie.webp", // ★変更
             placeholderIcon: "🧟‍♀️",
             bgm: "bgm_bad.mp3",
             text: `気がつくと、私は席に戻っていた。
@@ -411,7 +411,7 @@
         },
 
         true_end_resign: {
-            image: "image_sunrise.png",
+            image: "image_sunrise.webp", // ★変更
             placeholderIcon: "🌅",
             bgm: "bgm_sad_piano.mp3",
             text: `マキナの暴言は、死んでもなお働こうとする私を止めるための、荒療治だったのかもしれない。
@@ -426,7 +426,7 @@ LOGOUT……ではなく、<span class="highlight">RESIGNATION（退職）</span
             ]
         },
         true_end_final: {
-            image: "image_empty_desk.png",
+            image: "image_empty_desk.webp", // ★変更
             placeholderIcon: "💐",
             text: `「お疲れ様でした、私」
 
@@ -529,7 +529,7 @@ LOGOUT……ではなく、<span class="highlight">RESIGNATION（退職）</span
 
         if (scene.image) {
             const img = document.createElement("img");
-            img.src = imgBaseUrl + scene.image;
+            img.src = imgBaseUrl + scene.image; // 相対パス
             img.className = "scene-img fade-in";
             // 画像読み込みエラー時にプレースホルダーを表示
             img.onerror = showPlaceholder;
