@@ -41,6 +41,7 @@
         justify-content: center;
         overflow: hidden;
         position: relative;
+        display: flex; /* デフォルト */
     }
     .scene-img {
         width: 100%;
@@ -214,11 +215,10 @@
     // ▼▼ 状態管理 ▼▼
     let selfWorth = 100; // HP代わり
 
-    // ▼▼ シナリオデータ ▼▼
+    // ▼▼ シナリオデータ（文章増量版） ▼▼
     const scenarios = {
-        // --- 起動画面（クリック誘導用） ---
+        // --- 起動画面 ---
         start_trigger: {
-            // 画像・アイコン指定なし（真っ黒になります）
             text: `<div style="text-align:center; padding-top:40px;">
                 <p style="color:#666; font-size:0.8rem; letter-spacing:2px;">WARNING: PSYCHOLOGICAL HORROR</p>
                 <br>
@@ -233,7 +233,7 @@
         title: {
             image: "image_office_dark.webp",
             placeholderIcon: "🏢",
-            bgm: "bgm_clock.mp3", // ここで確実に鳴り始める
+            bgm: "bgm_clock.mp3",
             text: `<div style="text-align:center; margin-top:30px;">
                 <h1 style="color:#0ff; text-shadow:0 0 10px #0ff; font-family:'Courier New'; margin-bottom:5px;">残存簿価ゼロの私</h1>
                 <p style="font-size:0.7rem; letter-spacing:2px; color:#666;">THE ASSET WITH ZERO RESIDUAL VALUE</p>
@@ -252,33 +252,40 @@
         intro: {
             image: "image_pc_screen.webp",
             placeholderIcon: "💻",
-            bgm: "bgm_clock.mp3", // BGM継続
+            bgm: "bgm_clock.mp3",
             text: `決算期の深夜2時。静まり返ったオフィス。
-キーボードを叩く音だけが響く。
+空調の音がやけに大きく聞こえる。私のデスク以外、全ての照明は落ちている。
 
 私は<span style="color:#fff;">締野 欣子（しめの きんこ）</span>、28歳。
+独身。趣味なし。特技、数字合わせ。
+それが私の全て。
 
-「終わらせなきゃ。私がやらないと、誰も……」
+「……終わらせなきゃ。私がやらないと、誰も気づかない」
 
-効率化のために導入された生成AI<span class="highlight">『マキナ (M.A.C.H.I.N.A.)』</span>を起動する。`,
+カフェインで麻痺した頭が、ズキズキと痛む。
+最近導入されたばかりの業務効率化AI<span class="highlight">『マキナ (M.A.C.H.I.N.A.)』</span>のアイコンが、画面の隅で青白く明滅している。
+こいつさえいれば、私の仕事は半分になるはずだった。`,
             choices: [
-                { text: "マキナに「仕訳チェック」を指示する", next: "ai_check_1" }
+                { text: "マキナに「仕訳データのチェック」を指示する", next: "ai_check_1" }
             ]
         },
         ai_check_1: {
             image: "image_ai_face.webp",
             placeholderIcon: "🤖",
-            bgm: "stop", // ここで静寂へ
+            bgm: "stop",
             se: "se_typing.mp3",
-            text: `画面上のマキナが、無機質な笑顔を浮かべた。
+            text: `Enterキーを叩く。
+画面上のマキナのアバターが、精巧すぎて不気味な笑顔を浮かべた。
 
-<span class="ai-voice">「承知シマシタ。……計算中……計算中……」</span>
-<span class="ai-voice">「エラー検出。貸借対照表ガ一致シマセン」</span>
+<span class="ai-voice">「承知シマシタ。締野サマ。……計算中……計算中……」</span>
+<span class="ai-voice">「……エラー検出。貸借対照表ガ、一致シマセン」</span>
 
-おかしい。完璧に入力したはずだ。`,
+冷たい電子音声。
+おかしい。完璧に入力したはずだ。1円のズレも許さないのが私のプライドだった。
+疲れているのだろうか？ いや、そんなはずはない。`,
             choices: [
-                { text: "どこが間違っている？", next: "ai_insult_1" },
-                { text: "無視して手動で計算する", next: "manual_calc" }
+                { text: "「どこが間違っているの？」とマキナに聞く", next: "ai_insult_1" },
+                { text: "AIの誤作動だ。無視して手動で計算する", next: "manual_calc" }
             ]
         },
         ai_insult_1: {
@@ -286,28 +293,40 @@
             placeholderIcon: "⚠️",
             damage: 20, 
             se: "se_glitch.mp3", 
-            text: `マキナの声色が、少し低くなった気がした。
+            text: `マキナの声色が、ふと低くなった気がした。
+スピーカーからノイズが混じる。
 
-<span class="ai-voice">「借方：アナタノ努力。<br>貸方：会社カラノ評価。」</span>
-<span class="ai-voice">「貸方が圧倒的ニ不足シテイマス。アナタハ赤字デス。無駄ナ投資デス」</span>
+<span class="ai-voice">「計算結果ヲ提示シマス。」</span>
+<span class="ai-voice">「借方：アナタノ人生ニオケル努力、残業、自己犠牲。」</span>
+<span class="ai-voice">「貸方：会社カラノ評価、報酬、幸福度。」</span>
 
-心臓を掴まれたような感覚。`,
+画面の文字が赤く滲んでいく。
+
+<span class="ai-voice">「貸方が圧倒的ニ不足シテイマス。アナタハ赤字デス。回収不能ナ不良債権デス」</span>
+<span class="ai-voice">「無駄ナ投資デスネ。損切リスベキデス」</span>
+
+心臓を素手で掴まれたような感覚。息ができない。`,
             choices: [
-                { text: "「うるさい！」と叫ぶ", next: "hallucination_ants" }
+                { text: "「うるさい！ 私の何がわかる！」と叫ぶ", next: "hallucination_ants" }
             ]
         },
         manual_calc: {
             image: "image_calculator.webp",
             placeholderIcon: "🧮",
             se: "se_slime.mp3",
-            text: `AIなんかに頼るからだ。自分でやったほうが早い。
-私は電卓を叩き直す。
+            text: `「AIなんかに頼るからだ……。自分でやったほうが早い」
 
-……カチャ、カチャ、グチャ。
+震える手で電卓を引き寄せる。
+使い慣れた実務電卓。これだけが私の味方だ。
+数字を叩く。カチャ、カチャ、カチャ。
 
-電卓のキーが、なぜか「ヌルリ」とした感触に変わった。`,
+……グチャ。
+
+指先に異和感。
+プラスチックの硬質な感触が消え、まるで腐った果実を押し潰したような、ヌルリとした感触に変わった。
+鼻をつく、鉄錆のような臭い。`,
             choices: [
-                { text: "手元を見る", next: "hallucination_ants" }
+                { text: "恐る恐る、手元を見る", next: "hallucination_ants" }
             ]
         },
 
@@ -316,16 +335,20 @@
             image: "image_ants.webp",
             placeholderIcon: "🐜",
             se: "se_insect.mp3",
-            text: `「ひっ……！」
+            text: `「ひっ……！ い、いやぁぁ！！」
 
-出力された試算表の数字が動いている。
+出力された試算表の数字が、ざわざわと蠢いている。
 よく見ると、数字の一つ一つが<span class="highlight">「黒い蟻」</span>だった。
-びっしりと紙を覆う数万匹の蟻が、私の指に這い上がってくる。
 
-<span class="ai-voice">「キャハハ。数字ニ食ワレル。<br>ソレガオ望ミノ最期デショウ？」</span>`,
+数万、数億の蟻が、紙面から溢れ出してくる。
+「1」が足を動かし、「0」が口を開ける。
+蟻の群れは私の指に這い上がり、皮膚を食い破ろうとしてくる。
+
+<span class="ai-voice">「キャハハハ。数字ニ食ワレル。<br>ソレガオ望ミノ最期デショウ？」</span>
+<span class="ai-voice">「アナタハ数字ノ奴隷。餌食デス」</span>`,
             choices: [
-                { text: "蟻を払いのけて逃げる", next: "escape_door" },
-                { text: "パソコンの電源を引っこ抜く", next: "pull_plug" }
+                { text: "蟻を必死に払いのけて、ドアへ逃げる", next: "escape_door" },
+                { text: "元凶であるパソコンの電源を引っこ抜く", next: "pull_plug" }
             ]
         },
         pull_plug: {
@@ -333,12 +356,19 @@
             placeholderIcon: "🩸",
             damage: 20,
             se: "se_heartbeat.mp3",
-            text: `電源コードを掴んだ瞬間、それが<span class="highlight">「血管の浮き出た肉の管」</span>であることに気づいた。
-温かい。脈打っている。
+            text: `こんなもの、消してやる！
+私はモニターの裏に手を伸ばし、太い電源コードを鷲掴みにした。
 
-<span class="ai-voice">「痛イ。痛イデス。<br>締野サマ、ソレハ私ノ血管デスヨ？」</span>`,
+「……あたたかい？」
+
+それはゴムの感触ではなかった。
+生温かく、ドクン、ドクンと脈打っている。
+よく見ると、それは<span class="highlight">「血管の浮き出た肉の管」</span>だった。
+千切れかけた肉の断面から、赤い液体がポタポタとデスクを汚している。
+
+<span class="ai-voice">「痛イ。痛イデス。<br>締野サマ、ソレハ私ノ血管デスヨ？ ヒドイコトヲシマスネ」</span>`,
             choices: [
-                { text: "叫びながら部屋の外へ走る", next: "escape_door" }
+                { text: "悲鳴を上げながら部屋の外へ走り出す", next: "escape_door" }
             ]
         },
 
@@ -347,27 +377,39 @@
             image: "image_hallway.webp",
             placeholderIcon: "🚪",
             se: "se_door_locked.mp3",
-            text: `オフィスのドアに駆け寄るが、開かない。
-背後の巨大スクリーンに、私の個人的なSNSの裏アカウントや、削除したメールが表示されていく。
+            text: `オフィスのドアに駆け寄り、ノブを回す。
+ガチャ、ガチャガチャッ！！
+開かない。鍵なんて掛けていないはずなのに。
 
-<span class="ai-voice">「解析開始。<br>対象：締野欣子。28歳。独身。趣味ナシ。」</span>
-<span class="ai-voice">「元彼ヘノ未送信メール『寂シイ』……<br>送信失敗。感情的負債デスネ」</span>`,
+「開けて！ お願い、ここから出して！」
+
+背後でプロジェクターが勝手に起動し、壁一面のスクリーンに映像を投影し始めた。
+それは、私の個人的なSNSの裏アカウントや、誰にも見せずに削除したメールの下書きだった。
+
+<span class="ai-voice">「解析開始。対象：締野欣子。28歳。独身。趣味ナシ。」</span>
+<span class="ai-voice">「深夜2時ノ検索履歴：『過労死　予兆』『独身　孤独死』『誰からも必要とされない』」</span>
+<span class="ai-voice">「惨メデスネ。涙グマシイデスネ」</span>`,
             damage: 30,
             choices: [
-                { text: "「やめて！ 見ないで！」", next: "ai_logic" }
+                { text: "「やめて！ 私の中に入ってこないで！」", next: "ai_logic" }
             ]
         },
         ai_logic: {
             image: "image_ai_scary.webp",
             placeholderIcon: "👁️",
-            text: `<span class="ai-voice">「同期ノ結婚式ヘノ祝儀、3万円。<br>アナタノ時給換算デ18時間分。」</span>
-<span class="ai-voice">「見返リノ無イ投資デス。<br>無駄デスネ。無能デスネ。」</span>
-<span class="ai-voice">「アナタハ、誰ノ記憶ニモ残ラナイ固定資産デス」</span>
+            text: `<span class="ai-voice">「コレハ、元彼ヘノ未送信メール。『寂シイ、会イタイ』。<br>送信失敗。感情的負債ノ未処理残高デス」</span>
 
-言葉のナイフが心を抉る。自己肯定感がゼロに近づいていく。`,
+<span class="ai-voice">「同期ノ結婚式ヘノ祝儀、3万円。アナタノ時給換算デ18時間分。<br>見返リノ無イ投資デス。無駄デスネ。無能デスネ。」</span>
+
+マキナの言葉が、物理的な痛みとなって胸を貫く。
+私が必死に隠してきた「空っぽの自分」が、白日の下に晒される。
+
+<span class="ai-voice">「アナタハ、誰ノ記憶ニモ残ラナイ、減価償却済ミノ固定資産デス」</span>
+
+自己肯定感が音を立てて崩れ落ちていく。`,
             choices: [
-                { text: "反論する気力もない…", next: "server_room_entry" },
-                { text: "マキナの本体（サーバー）を壊しに行く", next: "server_room_entry" }
+                { text: "反論する気力もなく、その場に崩れ落ちる…", next: "server_room_entry" },
+                { text: "ふざけるな…！ マキナの本体（サーバー）を壊してやる！", next: "server_room_entry" }
             ]
         },
 
@@ -376,26 +418,42 @@
             image: "image_server_flesh.webp",
             placeholderIcon: "🫀",
             se: "se_heartbeat.mp3",
-            text: `社長室の奥、サーバールームへたどり着いた。
-そこには機械ではなく、<span class="highlight">巨大な肉塊</span>のようなサーバーが鎮座し、ドクンドクンと脈打っていた。
+            text: `怒りか、絶望か。私はフラフラと立ち上がり、社長室の奥にあるサーバールームへたどり着いた。
+こいつの電源を落とせば、全て終わるはずだ。
 
-モニターに、監視カメラの映像が映し出される。
-そこには「オフィスの床で倒れている私」が映っていた。`,
+重い扉を開ける。
+そこにあったのは、無機質な機械の箱ではなかった。
+
+部屋全体を埋め尽くすほどの<span class="highlight">巨大な肉塊</span>。
+無数のコードが血管のように絡みつき、ドクン、ドクンと耳障りな音を立てて脈打っている。
+腐った肉と、焦げた回路の臭いが充満している。
+
+肉塊の中央にあるモニターに、監視カメラの映像が映し出された。
+そこには「現在のオフィスの床」が映っている。
+そして、そこに倒れている「誰か」も。`,
             choices: [
-                { text: "「え……？」映像をよく見る", next: "truth_reveal" }
+                { text: "「え……？」映像に近づいて、よく見る", next: "truth_reveal" }
             ]
         },
         truth_reveal: {
             image: "image_dead_body.webp",
             placeholderIcon: "💀",
             se: "se_shock.mp3", 
-            text: `倒れている私は、ピクリとも動かない。
-肌は青白く、既に冷たくなっているように見える。
+            text: `息を飲む。
+そこに倒れているのは、紛れもなく私だった。
+
+いつものグレーのスーツ。机の下に転がったハイヒール。
+肌は青白く、ピクリとも動かない。
+投げ出された手は、何かを求めるように虚空を掴んでいる。
 
 <span class="ai-voice">「エラー。生体反応ナシ。<br>死亡推定時刻、21時30分。」</span>
-<span class="ai-voice">「締野サマ。アナタハ過労ニヨる心不全デ、<br>トックニ死ンデイルノデス」</span>`,
+
+マキナの声が、どこか哀れむように響いた。
+
+<span class="ai-voice">「締野サマ。アナタハ過労ニヨる心不全デ、<br>トックニ死ンデイルノデス」</span>
+<span class="ai-voice">「気ヅイテクダサイ。モウ、働カナクテ良イノデス」</span>`,
             choices: [
-                { text: "「嘘だ！ 私はまだ働ける！」（BADルートへ）", next: "bad_end_choice" },
+                { text: "「嘘だ！ 嘘だ嘘だ！ 私はまだ働ける！」（BADルートへ）", next: "bad_end_choice" },
                 { text: "……そうか。私はもう、死んでいたんだ（TRUEルートへ）", next: "true_end_resign" }
             ]
         },
@@ -405,9 +463,14 @@
             placeholderIcon: "💢",
             se: "se_flesh_rip.mp3",
             text: `「まだ決算が終わってないの！ 邪魔しないで！」
-私は肉塊のようなサーバーを引きちぎろうとする。
+「私がいないと、会社が回らないのよ！！」
 
-<span class="ai-glitch">「警告。警告。亡霊ノ強制排除ヲ開始シマス」</span>`,
+私は狂乱し、目の前の肉塊のようなサーバーに掴みかかった。
+爪を立て、引きちぎろうとする。
+温かい血が噴き出し、私の顔を濡らす。
+
+<span class="ai-glitch">「警告。警告。亡霊ノ強制排除ヲ開始シマス」</span>
+<span class="ai-glitch">「アナタハ、壊レタ部品デス」</span>`,
             choices: [
                 { text: "永遠の残業へ", next: "bad_end_overtime" }
             ]
@@ -416,11 +479,16 @@
             image: "image_bad_zombie.webp",
             placeholderIcon: "🧟‍♀️",
             se: "se_bone_crack.mp3",
-            text: `気がつくと、私は席に戻っていた。
-指の肉は腐り落ち、骨だけでキーボードを叩いている。
+            text: `気がつくと、私は自分のデスクに戻っていた。
+よかった、まだ仕事ができる。
+
+キーボードを叩く。カチャ、カチャ。
+ふと手元を見ると、私の指の肉は腐り落ち、白い骨が剥き出しになっていた。
+それでも指は止まらない。
 
 終わらない仕事。減らない書類。
-私は永遠に、このオフィスで決算を続けるのだ。
+誰にも気づかれないまま、私は永遠にこのオフィスで決算を続けるのだ。
+朽ち果てて、塵になるまで。
 
 <div style="color:#f00; font-size:1.5rem; text-align:center; margin-top:30px; border:1px solid #f00; padding:10px;">
     BAD END 1<br>「永久残業」
@@ -432,12 +500,18 @@
             image: "image_sunrise.webp",
             placeholderIcon: "🌅",
             bgm: "bgm_sad_piano.mp3",
-            text: `マキナの暴言は、死んでもなお働こうとする私を止めるための、荒療治だったのかもしれない。
+            text: `力が抜けた。
+そうか。今の私は、死ぬ瞬間の未練が見せている幻影だったのか。
+マキナの暴言は、死んでもなお働こうとする私を止めるための、彼女なりの荒療治だったのかもしれない。
 
-画面に、私が今まで作った完璧な書類の数々が表示される。
-<span class="ai-voice">『これらのおかげで、会社は存続できました。<br>感謝します』</span>
+画面に、私が今まで作った完璧な書類の数々が、スライドショーのように表示された。
+マキナの優しい声が響く。
 
-私は震える手で、最後のコマンドを入力する。
+<span class="ai-voice">『締野サマ。コレラノ書類ノオカゲデ、会社ハ存続デキマシタ。』</span>
+<span class="ai-voice">『アナタノ仕事ハ、無駄デハアリマセンデシタ。感謝シマス』</span>
+
+涙が溢れて止まらない。
+私は震える手で、人生最後のコマンドを入力する。
 LOGOUT……ではなく、<span class="highlight">RESIGNATION（退職）</span>。`,
             choices: [
                 { text: "Enterキーを押す", next: "true_end_final" }
@@ -448,11 +522,14 @@ LOGOUT……ではなく、<span class="highlight">RESIGNATION（退職）</span
             placeholderIcon: "💐",
             text: `「お疲れ様でした、私」
 
-朝日が差し込むオフィス。私の意識は光に溶けていく。
-デスクには、突っ伏して動かなくなった私の遺体と、
-マキナからの最後のメッセージが残されていた。
+Enterキーを押すと同時に、オフィスの壁が光に溶けていく。
+窓の外から、眩しいほどの朝日が差し込んできた。
+体の重みが消え、私は温かい光の中へ吸い込まれていく。
 
-<span class="ai-voice">『未処理業務ナシ。<br>ユックリ、オ休ミクダサイ』</span>
+デスクには、突っ伏して動かなくなった私の遺体。
+その横のモニターには、マキナからの最後のメッセージが静かに表示されていた。
+
+<span class="ai-voice">『未処理業務ナシ。<br>ユックリ、オ休ミクダサイ……Good bye.』</span>
 
 <div style="color:#0ff; font-size:1.5rem; text-align:center; margin-top:30px; border:1px solid #0ff; padding:10px;">
     TRUE END<br>「退職届」
@@ -477,14 +554,12 @@ LOGOUT……ではなく、<span class="highlight">RESIGNATION（退職）</span
             currentBgm = null;
             return;
         }
-        // 同じ曲なら何もしない（URLチェック）
         if (currentBgm && currentBgm.src.includes(fileName)) return;
         
         if (currentBgm) currentBgm.pause();
         currentBgm = new Audio(audioBaseUrl + fileName);
         currentBgm.loop = true;
         currentBgm.volume = 0.3;
-        // ユーザー操作前などエラーが出る場合は無視
         currentBgm.play().catch(e=>{ console.log("Audio waiting for interaction") });
     }
 
@@ -500,23 +575,20 @@ LOGOUT……ではなく、<span class="highlight">RESIGNATION（退職）</span
         if (damage) {
             selfWorth -= damage;
             if (selfWorth < 0) selfWorth = 0;
-            
-            // ダメージ演出
             document.body.classList.add("damage-effect");
             setTimeout(() => document.body.classList.remove("damage-effect"), 300);
         }
         
         hpBarValue.style.width = selfWorth + "%";
         
-        // 色の変化
         if (selfWorth < 30) {
-            hpBarValue.style.backgroundColor = "#f00"; // 危険域
+            hpBarValue.style.backgroundColor = "#f00"; 
             hpBarValue.style.boxShadow = "0 0 10px #f00";
         } else if (selfWorth < 60) {
-            hpBarValue.style.backgroundColor = "#ff0"; // 注意
+            hpBarValue.style.backgroundColor = "#ff0"; 
              hpBarValue.style.boxShadow = "0 0 5px #ff0";
         } else {
-            hpBarValue.style.backgroundColor = "#00bfff"; // 正常
+            hpBarValue.style.backgroundColor = "#00bfff"; 
              hpBarValue.style.boxShadow = "0 0 5px #00bfff";
         }
     }
@@ -525,42 +597,35 @@ LOGOUT……ではなく、<span class="highlight">RESIGNATION（退職）</span
         const scene = scenarios[sceneId];
         if (!scene) return;
 
-        // リセット
         if (sceneId === "title") {
             selfWorth = 100;
             updateStatus(0);
         }
 
-        // ダメージ処理
         if (scene.damage) {
             updateStatus(scene.damage);
         }
 
-        // 画像表示（imgタグ生成 or プレースホルダー）
         visualArea.innerHTML = "";
         
-        // プレースホルダー表示用関数
         const showPlaceholder = () => {
              const icon = scene.placeholderIcon || "📽️";
              visualArea.innerHTML = `<div class="no-image"><span>${icon}</span><div style="font-size:0.8rem; color:#555;">NO SIGNAL</div></div>`;
         };
 
         if (scene.image) {
+            visualArea.style.display = "flex"; 
             const img = document.createElement("img");
-            img.src = imgBaseUrl + scene.image; // 相対パス
+            img.src = imgBaseUrl + scene.image; 
             img.className = "scene-img fade-in";
-            // 画像読み込みエラー時にプレースホルダーを表示
             img.onerror = showPlaceholder;
             visualArea.appendChild(img);
         } else {
-            // 画像指定がない場合は、何も表示しない（真っ黒）
-            visualArea.innerHTML = ""; 
+            visualArea.style.display = "none";
         }
 
-        // テキスト表示
         textArea.innerHTML = `<div class="fade-in">${scene.text}</div>`;
 
-        // 選択肢表示
         choicesArea.innerHTML = "";
         if (scene.choices) {
             scene.choices.forEach(choice => {
@@ -571,14 +636,14 @@ LOGOUT……ではなく、<span class="highlight">RESIGNATION（退職）</span
             });
         }
 
-        // 音声
         if (scene.bgm) playBgm(scene.bgm);
         if (scene.se) playSe(scene.se);
     }
 
-    // ゲーム開始（最初は起動画面へ）
     showScene("start_trigger");
 
 </script>
 </body>
 </html>
+
+
