@@ -554,6 +554,7 @@ Enterキーを押すと同時に、オフィスの壁が光に溶けていく。
             currentBgm = null;
             return;
         }
+        // 同じ曲なら何もしない（URLチェック）
         if (currentBgm && currentBgm.src.includes(fileName)) return;
         
         if (currentBgm) currentBgm.pause();
@@ -594,6 +595,9 @@ Enterキーを押すと同時に、オフィスの壁が光に溶けていく。
     }
 
     function showScene(sceneId) {
+        // ★画面トップへスクロールする処理を追加★
+        window.scrollTo(0, 0);
+
         const scene = scenarios[sceneId];
         if (!scene) return;
 
@@ -645,5 +649,3 @@ Enterキーを押すと同時に、オフィスの壁が光に溶けていく。
 </script>
 </body>
 </html>
-
-
